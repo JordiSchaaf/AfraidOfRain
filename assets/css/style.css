@@ -1,0 +1,29 @@
+canvas {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	background: transparent;
+}
+
+#background{
+    background-image: url("../images/background.jpg");
+    z-index: -2;
+}
+
+#playerCanvas{
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 960px;
+    height: 482px;
+    z-index: 0;
+}
+
+.player{
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    width: 36px;
+    height: 65px;
+}
