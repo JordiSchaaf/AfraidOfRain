@@ -12,18 +12,20 @@ class Collision{
         const player = this._game.player;
         var playerheight = window.innerHeight - this._game.player.el.getBoundingClientRect().top;
 
-        if(player.playerX < (this._game.raindropX + this._game.raindropWidth) && (player.playerX + this._game.playerWidth) > this._game.raindropX){
-            this.xCollision = true;
-            console.log("natX");
-            console.dir(this.xCollision);
-        }
+        this._game.raindrops.forEach(raindrop => { 
+            if(player.playerX < (raindrop.raindropX + this._game.raindropWidth) && (player.playerX + this._game.playerWidth) > raindrop.raindropX && playerheight >= (window.innerHeight - raindrop.raindropY)){
+                raindrop.state = "hit";
+                 if(raindrop.state = "hit"){
+                    raindrop.html.parentElement.removeChild(raindrop.el);
+                    this._game.raindrops.splice(this._game.raindrops.indexOf(raindrop),1);
+                    this._game.player.lives--;
+                }
+                
 
-        // if(this._game.player.el.getBoundingClientRect().top == this._game.raindropY){
-        //     this.yCollision = true;
-        //     console.log("natY");
-        //     console.dir(this.yCollision);
-        // }
-
+            }
+           
+            
+        });
     }
-    
+   
 }

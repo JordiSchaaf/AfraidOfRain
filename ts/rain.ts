@@ -1,5 +1,5 @@
 class Rain{
-    private html : HTMLElement = document.createElement('div');
+    public html : HTMLElement = document.createElement('div');
     private className : string = 'rain';
     public state : string = "alive";
     
@@ -21,14 +21,18 @@ class Rain{
         this.position = this.position.add(displacement);
     }
     
-    public render(){
+    public render(): void{
         this.boundsChecker();
         this.html.style.top = this.position.y() + 'px';
-        this.html.style.left = this.position.x() + 'px';        
+        this.html.style.left = this.position.x() + 'px';  
     }
 
     get raindropY(): number{
         return this.position.y();
+    }
+
+    get raindropX(): number{
+        return this.position.x();
     }
 
     get el(): any{

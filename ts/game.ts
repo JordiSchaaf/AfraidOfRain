@@ -1,14 +1,18 @@
 class Game {
     private _player : Player;
     private _raindrops : Array<Rain> = [];
-    private _windowListener: WindowListener;
-    private _collision: Collision;
+    private _collision : Collision;
+    private _active : boolean = true;
+    private _score : number = 0;
 
     private _randomCounter: number = 0;
+    private _lifebar : boolean = false;
+    private _threehearts : boolean = false;
+    private _twohearts : boolean = false;
+    private _oneheart : boolean = false;
 
     constructor() {
         this._player = new Player;
-        this._windowListener = new WindowListener();
         this._collision = new Collision(this);
     }
     private start(){
@@ -16,12 +20,17 @@ class Game {
     }
 
     private loop = () => {
-        this.move();
-        this.collide();
-        this.randomRain();
-        this.render();
-        this.adjust();
-        setTimeout(this.loop, 1000/60);
+        if(this._active){
+            this.move();
+            this.collide();
+            this.randomRain();
+            this.drawLifebar();
+            this.drawScore();
+            this.render();
+            this.adjust();
+            this.gameCheck();
+            setTimeout(this.loop, 1000/60);
+        }
     }
 
     public render(){
@@ -31,7 +40,7 @@ class Game {
         });
     }
 
-    public move(){
+    private move(){
         this._player.move();
         this._raindrops.forEach(raindrop => {
             raindrop.move();
@@ -42,12 +51,35 @@ class Game {
         this._collision.collide();
     }
 
-    private adjust(): void{
+     public adjust(): void{
         this._raindrops.forEach(raindrop => {
             if(raindrop.state == "dead"){
                 this._raindrops.splice(this._raindrops.indexOf(raindrop),1);
+                this._score++;
             }
         });
+    }
+
+    public gameCheck(){
+        if(this.player.lives == 0){
+            var GO = document.getElementById('gameOver');
+            GO.style.visibility = 'visible';
+            GO.style.display = 'block';
+            document.getElementById('scoreText').innerHTML ="";
+            document.getElementById('result').innerHTML="While trying to stay dry you dodged "+this._score.toString()+" droplets of rain!";
+
+            document.getElementById('heart1').innerHTML="";
+            document.getElementById('heart2').innerHTML="";
+            document.getElementById('heart3').innerHTML="";
+            document.getElementById('playerCanvas').innerHTML="";
+            document.getElementById('rain').innerHTML="";
+            document.getElementById('grass').innerHTML="";
+            this._active = false;
+        }
+    }
+
+    public finish(){
+
     }
 
     get player(): Player{
@@ -58,24 +90,8 @@ class Game {
         return this._player.el.getBoundingClientRect().width;
     }
 
-    get windowListener(): WindowListener{
-        return this._windowListener;
-    }
-
-    get raindropX(): number{
-        var x;
-        this._raindrops.forEach(raindrop => {
-            x = raindrop.position.x();
-        });
-        return x;
-    }
-
-    get raindropY(): number{
-        var y;
-        this._raindrops.forEach(raindrop => {
-            y = raindrop.raindropY;
-        });
-        return y;
+    get raindrops(): Array<Rain>{
+        return this._raindrops;
     }
 
     get raindropWidth(): number {
@@ -92,6 +108,59 @@ class Game {
         if(this._randomCounter == 4){
             this._randomCounter = 0;
             this._raindrops.push(new Rain(new Vector(0, 10)));
-        } 
+        }
+         
     }
+
+    private drawLifebar(){
+        var html1 : HTMLElement = document.createElement('div');
+        var html2 : HTMLElement = document.createElement('div');
+        var html3 : HTMLElement = document.createElement('div');
+
+        if(!this._lifebar){
+            const heart1 = document.querySelector('#heart1');
+            html1.className = "lifebar";
+            heart1.appendChild(html1);
+
+            const heart2 = document.querySelector('#heart2');
+            html2.className = "lifebar";
+            heart2.appendChild(html2);
+
+            const heart3 = document.querySelector('#heart3');
+            html3.className = "lifebar";
+            heart3.appendChild(html3);
+
+            this._lifebar = true;
+        }
+        if(!this._threehearts && this._player.lives == 3){
+            html1.classList.add("heart");
+            html2.classList.add("heart");
+            html3.classList.add("heart");
+
+            this._threehearts = true;
+        }
+
+        if(!this._twohearts && this._player.lives == 2){
+            document.getElementById('heart3').innerHTML="";
+            const heart3 = document.querySelector('#heart3');
+            html3.classList.add("lifebar", "noheart");
+            heart3.appendChild(html3);
+
+            this._twohearts = true;
+        }
+
+        if(!this._oneheart && this._player.lives == 1){
+            document.getElementById('heart2').innerHTML="";
+            const heart2 = document.querySelector('#heart2');
+            html2.classList.add("lifebar", "noheart");
+            heart2.appendChild(html2);
+
+            this._oneheart = true;
+        }        
+    }
+
+    private drawScore(){
+        document.getElementById('scoreText').innerHTML = this._score.toString();
+    }
+
 }

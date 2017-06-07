@@ -2,17 +2,27 @@ var Game = (function () {
     function Game() {
         var _this = this;
         this._raindrops = [];
+        this._active = true;
+        this._score = 0;
         this._randomCounter = 0;
+        this._lifebar = false;
+        this._threehearts = false;
+        this._twohearts = false;
+        this._oneheart = false;
         this.loop = function () {
-            _this.move();
-            _this.collide();
-            _this.randomRain();
-            _this.render();
-            _this.adjust();
-            setTimeout(_this.loop, 1000 / 60);
+            if (_this._active) {
+                _this.move();
+                _this.collide();
+                _this.randomRain();
+                _this.drawLifebar();
+                _this.drawScore();
+                _this.render();
+                _this.adjust();
+                _this.gameCheck();
+                setTimeout(_this.loop, 1000 / 60);
+            }
         };
         this._player = new Player;
-        this._windowListener = new WindowListener();
         this._collision = new Collision(this);
     }
     Game.prototype.start = function () {
@@ -38,8 +48,27 @@ var Game = (function () {
         this._raindrops.forEach(function (raindrop) {
             if (raindrop.state == "dead") {
                 _this._raindrops.splice(_this._raindrops.indexOf(raindrop), 1);
+                _this._score++;
             }
         });
+    };
+    Game.prototype.gameCheck = function () {
+        if (this.player.lives == 0) {
+            var GO = document.getElementById('gameOver');
+            GO.style.visibility = 'visible';
+            GO.style.display = 'block';
+            document.getElementById('scoreText').innerHTML = "";
+            document.getElementById('result').innerHTML = "While trying to stay dry you dodged " + this._score.toString() + " droplets of rain!";
+            document.getElementById('heart1').innerHTML = "";
+            document.getElementById('heart2').innerHTML = "";
+            document.getElementById('heart3').innerHTML = "";
+            document.getElementById('playerCanvas').innerHTML = "";
+            document.getElementById('rain').innerHTML = "";
+            document.getElementById('grass').innerHTML = "";
+            this._active = false;
+        }
+    };
+    Game.prototype.finish = function () {
     };
     Object.defineProperty(Game.prototype, "player", {
         get: function () {
@@ -55,31 +84,9 @@ var Game = (function () {
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(Game.prototype, "windowListener", {
+    Object.defineProperty(Game.prototype, "raindrops", {
         get: function () {
-            return this._windowListener;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Game.prototype, "raindropX", {
-        get: function () {
-            var x;
-            this._raindrops.forEach(function (raindrop) {
-                x = raindrop.position.x();
-            });
-            return x;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Game.prototype, "raindropY", {
-        get: function () {
-            var y;
-            this._raindrops.forEach(function (raindrop) {
-                y = raindrop.raindropY;
-            });
-            return y;
+            return this._raindrops;
         },
         enumerable: true,
         configurable: true
@@ -102,16 +109,48 @@ var Game = (function () {
             this._raindrops.push(new Rain(new Vector(0, 10)));
         }
     };
+    Game.prototype.drawLifebar = function () {
+        var html1 = document.createElement('div');
+        var html2 = document.createElement('div');
+        var html3 = document.createElement('div');
+        if (!this._lifebar) {
+            var heart1 = document.querySelector('#heart1');
+            html1.className = "lifebar";
+            heart1.appendChild(html1);
+            var heart2 = document.querySelector('#heart2');
+            html2.className = "lifebar";
+            heart2.appendChild(html2);
+            var heart3 = document.querySelector('#heart3');
+            html3.className = "lifebar";
+            heart3.appendChild(html3);
+            this._lifebar = true;
+        }
+        if (!this._threehearts && this._player.lives == 3) {
+            html1.classList.add("heart");
+            html2.classList.add("heart");
+            html3.classList.add("heart");
+            this._threehearts = true;
+        }
+        if (!this._twohearts && this._player.lives == 2) {
+            document.getElementById('heart3').innerHTML = "";
+            var heart3 = document.querySelector('#heart3');
+            html3.classList.add("lifebar", "noheart");
+            heart3.appendChild(html3);
+            this._twohearts = true;
+        }
+        if (!this._oneheart && this._player.lives == 1) {
+            document.getElementById('heart2').innerHTML = "";
+            var heart2 = document.querySelector('#heart2');
+            html2.classList.add("lifebar", "noheart");
+            heart2.appendChild(html2);
+            this._oneheart = true;
+        }
+    };
+    Game.prototype.drawScore = function () {
+        document.getElementById('scoreText').innerHTML = this._score.toString();
+    };
     return Game;
 }());
-var app = {};
-(function () {
-    var init = function () {
-        app.game = new Game();
-        app.game.start();
-    };
-    window.addEventListener('load', init);
-})();
 var Player = (function () {
     function Player() {
         this.html = document.createElement('div');
@@ -119,6 +158,7 @@ var Player = (function () {
         this.xPos = 0;
         this.yPos = 0;
         this.keyboardListener = new KeyListener;
+        this.lives = 3;
         var game = document.querySelector('#playerCanvas');
         this.html.className = this.className;
         game.appendChild(this.html);
@@ -213,6 +253,13 @@ var Rain = (function () {
         enumerable: true,
         configurable: true
     });
+    Object.defineProperty(Rain.prototype, "raindropX", {
+        get: function () {
+            return this.position.x();
+        },
+        enumerable: true,
+        configurable: true
+    });
     Object.defineProperty(Rain.prototype, "el", {
         get: function () {
             return this.html;
@@ -254,13 +301,19 @@ var Collision = (function () {
         this._game = game;
     }
     Collision.prototype.collide = function () {
+        var _this = this;
         var player = this._game.player;
         var playerheight = window.innerHeight - this._game.player.el.getBoundingClientRect().top;
-        if (player.playerX < (this._game.raindropX + this._game.raindropWidth) && (player.playerX + this._game.playerWidth) > this._game.raindropX) {
-            this.xCollision = true;
-            console.log("natX");
-            console.dir(this.xCollision);
-        }
+        this._game.raindrops.forEach(function (raindrop) {
+            if (player.playerX < (raindrop.raindropX + _this._game.raindropWidth) && (player.playerX + _this._game.playerWidth) > raindrop.raindropX && playerheight >= (window.innerHeight - raindrop.raindropY)) {
+                raindrop.state = "hit";
+                if (raindrop.state = "hit") {
+                    raindrop.html.parentElement.removeChild(raindrop.el);
+                    _this._game.raindrops.splice(_this._game.raindrops.indexOf(raindrop), 1);
+                    _this._game.player.lives--;
+                }
+            }
+        });
     };
     return Collision;
 }());
@@ -293,31 +346,5 @@ var KeyListener = (function () {
         configurable: true
     });
     return KeyListener;
-}());
-var WindowListener = (function () {
-    function WindowListener() {
-        this.listen(0);
-    }
-    WindowListener.prototype.listen = function (interval) {
-        var bge = document.documentElement;
-        var bg = document.getElementById('#playerCanvas');
-        this._windowWidth = window.innerWidth || bge.clientWidth || bg.clientWidth;
-        this._windowHeight = window.innerHeight || bge.clientHeight || bg.clientHeight;
-    };
-    Object.defineProperty(WindowListener.prototype, "windowHeight", {
-        get: function () {
-            return this._windowHeight;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(WindowListener.prototype, "windowWidth", {
-        get: function () {
-            return this._windowWidth;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    return WindowListener;
 }());
 //# sourceMappingURL=main.js.map

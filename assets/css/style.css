@@ -6,6 +6,98 @@ body{
     z-index: -3;
 }
 
+.homescreen{
+    background: rgba(0,0,0,0.3);
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    padding-top: 5%;
+    z-index: +1;
+}
+
+#gameOver{
+    visibility: hidden;
+}
+
+#startbutton{
+    padding-top: 3%;
+    cursor: pointer;
+    cursor: hand;
+}
+
+#welcome{
+    width: 40%;
+    display: inline-block;
+}
+
+#info{
+    color: white;
+    font-size: 1.5em;
+    font-family: "Lucida Console", "Courier New"; 
+}
+
+#stats{
+    position: absolute;
+    width: 25%;
+    height: 10%;
+    right: 0px;
+    top: 0px;
+    z-index: 0;
+}
+
+#score{
+    position: absolute;
+    width: 30%;
+    height: 100%;
+    display: inline-block;
+    text-align: center;
+}
+
+#scoreText{
+    color: white;
+    font-size: 2em;
+    font-family: "Lucida Console", "Courier New"; 
+}
+
+.result{
+    width: 40%;
+    display: inline-block;
+}
+
+#result{
+    color: white;
+    font-size: 1.5em;
+    font-family: "Lucida Console", "Courier New"; 
+    align-self: center;
+}
+
+#lives{
+    position: absolute;
+    right: 0px;
+    width: 70%;
+    height: 100%;
+    display: inline-block;
+}
+
+table{
+    width: 100%;
+    height: 100%;
+}
+
+.lifebar{
+    width: 100%;
+    height: 100%;
+}
+
+.heart{
+    content: url("../images/heart.png");
+}
+
+.noheart{
+    content: url("../images/emptyHeart.png")
+}
+
 #playerCanvas{
     position: absolute;
     width: 100%;

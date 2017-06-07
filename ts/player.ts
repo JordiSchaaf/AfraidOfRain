@@ -4,7 +4,8 @@ class Player{
     private xPos : number = 0;
     private yPos : number = 0;
     private keyboardListener = new KeyListener;
-    private _collision : Collision; 
+    private _collision : Collision;
+    public lives : number = 3;
 
     constructor(){
         const game = document.querySelector('#playerCanvas');
@@ -35,7 +36,6 @@ class Player{
             this.xPos = window.innerWidth - this.html.getBoundingClientRect().width;
         }
     }
-
 
     public render(): void{
         this.html.style.bottom = this.yPos + 'px';

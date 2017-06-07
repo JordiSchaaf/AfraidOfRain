@@ -3,12 +3,76 @@
     <head>
         <title>Afraid of Rain</title>
         <meta charset="utf-8">
+        <link rel="shortcut icon" href="assets/images/icon.png"/>
         <link rel="stylesheet" href="assets/css/style.css">
     </head>
     <body>
+        <div class="homescreen" id="title">
+            <div>
+                <img src="assets/images/Title1.png">
+                <img src="assets/images/Title2.png">
+                <img src="assets/images/Title3.png">
+            </div>
+            <br><br>
+            <div id="welcome">
+                <p id="info">
+                    You were walking outside and suddenly it started raining. 
+                    You don't like getting wet so try to dodge all the falling droplets!
+                </p>
+            </div>
+            <div id="startButton">
+                <a onclick="startGame();">
+                    <img id="startbutton" src="assets/images/Start.png" onmouseover="this.src='assets/images/Starth.png'" onmouseout="this.src='assets/images/Start.png'">
+                </a>
+            </div>
+        </div>
+
+        <div class="homescreen" id="gameOver">
+            <div>
+                <img src="assets/images/game.png">
+                <img src="assets/images/over.png">
+            </div>
+            <br><br>
+            <div class="result">
+                <p id="result"></p>
+            </div>
+            <div id="startButton">
+                <a onclick="restartGame();">
+                    <img id="startbutton" src="assets/images/TryAgain.png" onmouseover="this.src='assets/images/TryAgainh.png'" onmouseout="this.src='assets/images/TryAgain.png'">
+                </a>
+            </div>
+        </div>
+
+
+        <div id="stats">
+            <div id="score">
+                <p id="scoreText"></p>
+            </div>
+            <div id="lives">
+                <table>
+                    <tr>
+                        <td id="heart1"></td>
+                        <td id="heart2"></td>
+                        <td id="heart3"></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
         <div id="playerCanvas"></div>
         <div id="rain"></div>
         <div id="grass"></div>
         <script src="js/main.js"></script>
+        <script>
+            function startGame(){
+                var game = new Game();
+                document.getElementById("title").parentElement.removeChild(title);
+                game.start();
+            }
+            function restartGame(){
+                var game = new Game();
+                document.getElementById("gameOver").style.visibility= 'hidden';
+                game.start();
+            }
+        </script>
     </body>
 </html>
