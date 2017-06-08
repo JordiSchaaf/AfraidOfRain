@@ -71,7 +71,7 @@ class Game {
             GO.style.visibility = 'visible';
             GO.style.display = 'block';
             document.getElementById('scoreText').innerHTML ="";
-            document.getElementById('result').innerHTML="While trying to stay dry you dodged "+this._score.toString()+" droplets of rain!";
+            document.getElementById('result').innerHTML="While trying to stay dry you dodged "+this._score.toString()+" droplets of rain! <br><br><br><b>Controls: Left, Right</b>";
 
             document.getElementById('heart1').innerHTML="";
             document.getElementById('heart2').innerHTML="";
