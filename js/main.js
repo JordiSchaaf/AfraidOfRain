@@ -5,6 +5,8 @@ var Game = (function () {
         this._active = true;
         this._score = 0;
         this._randomCounter = 0;
+        this._counter = 0;
+        this._wind = 0;
         this._lifebar = false;
         this._threehearts = false;
         this._twohearts = false;
@@ -13,6 +15,7 @@ var Game = (function () {
             if (_this._active) {
                 _this.move();
                 _this.collide();
+                _this.difficulty();
                 _this.randomRain();
                 _this.drawLifebar();
                 _this.drawScore();
@@ -106,7 +109,13 @@ var Game = (function () {
         this._randomCounter += 1;
         if (this._randomCounter == 4) {
             this._randomCounter = 0;
-            this._raindrops.push(new Rain(new Vector(0, 10)));
+            this._raindrops.push(new Rain(new Vector(this._wind, 10)));
+        }
+    };
+    Game.prototype.difficulty = function () {
+        this._counter += 1;
+        if (this._counter % 600 === 0) {
+            this._wind = Math.round(Math.random() * 5 - 2);
         }
     };
     Game.prototype.drawLifebar = function () {
@@ -234,7 +243,7 @@ var Rain = (function () {
         this.html.className = this.className;
         game.appendChild(this.html);
         var rect = this.html.getBoundingClientRect();
-        this.position = new Vector(Math.round(Math.random() * window.innerWidth), -28);
+        this.position = new Vector((Math.round(Math.random() * (window.innerWidth + 100)) - 100), -28);
         this.speed = speed;
     }
     Rain.prototype.move = function () {
@@ -322,17 +331,21 @@ var KeyListener = (function () {
         var _this = this;
         this._keyevents = { left: false, right: false };
         this.keyUpDownHandler = function (e) {
-            if (e.key == 'ArrowLeft' && e.type == 'keydown') {
-                _this._keyevents.left = true;
-                _this._keyevents.right = false;
+            if (e.type == 'keydown') {
+                if (e.key == 'ArrowLeft') {
+                    _this._keyevents.left = true;
+                }
+                else if (e.key == 'ArrowRight') {
+                    _this._keyevents.right = true;
+                }
             }
-            else if (e.key == 'ArrowRight' && e.type == 'keydown') {
-                _this._keyevents.right = true;
-                _this._keyevents.left = false;
-            }
-            else {
-                _this._keyevents.left = false;
-                _this._keyevents.right = false;
+            if (e.type == 'keyup') {
+                if (e.key == 'ArrowLeft') {
+                    _this._keyevents.left = false;
+                }
+                else if (e.key == 'ArrowRight') {
+                    _this._keyevents.right = false;
+                }
             }
         };
         window.addEventListener("keydown", this.keyUpDownHandler);

@@ -6,6 +6,10 @@ class Game {
     private _score : number = 0;
 
     private _randomCounter: number = 0;
+
+    private _counter: number = 0;
+    private _wind: number = 0;
+
     private _lifebar : boolean = false;
     private _threehearts : boolean = false;
     private _twohearts : boolean = false;
@@ -23,6 +27,7 @@ class Game {
         if(this._active){
             this.move();
             this.collide();
+            this.difficulty();
             this.randomRain();
             this.drawLifebar();
             this.drawScore();
@@ -107,9 +112,16 @@ class Game {
 
         if(this._randomCounter == 4){
             this._randomCounter = 0;
-            this._raindrops.push(new Rain(new Vector(0, 10)));
+            this._raindrops.push(new Rain(new Vector(this._wind, 10)));
         }
          
+    }
+
+    private difficulty(){
+        this._counter += 1;
+        if(this._counter % 600 === 0){
+            this._wind = Math.round(Math.random() * 5 - 2);
+        }
     }
 
     private drawLifebar(){

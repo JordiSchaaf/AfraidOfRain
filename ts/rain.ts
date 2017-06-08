@@ -12,7 +12,7 @@ class Rain{
         this.html.className = this.className;
         game.appendChild(this.html);
         let rect = this.html.getBoundingClientRect();
-        this.position = new Vector(Math.round(Math.random() * window.innerWidth), -28);
+        this.position = new Vector((Math.round(Math.random() * (window.innerWidth+100))-100), -28);
         this.speed = speed;
     }
 
