@@ -25,6 +25,8 @@ class KeyListener
         if (e.key == 'ArrowLeft') {this._keyevents.left = false}
         else if (e.key == 'ArrowRight') {this._keyevents.right = false}
       }
+
+      
     }
 
     /**
